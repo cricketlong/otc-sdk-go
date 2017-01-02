@@ -157,7 +157,7 @@ func Create(c *opentelekomcloud.ServiceClient, opts AuthOptionsBuilder) (r Creat
 		return
 	}
 
-	resp, err := c.Post(tokenURL(c), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := c.Post(tokenURL(c), b, &r.Body, &opentelekomcloud.RequestOpts{
 		MoreHeaders: map[string]string{"X-Auth-Token": ""},
 	})
 	r.Err = err
@@ -168,8 +168,8 @@ func Create(c *opentelekomcloud.ServiceClient, opts AuthOptionsBuilder) (r Creat
 }
 
 // Get validates and retrieves information about another token.
-func Get(c *gophercloud.ServiceClient, token string) (r GetResult) {
-	resp, err := c.Get(tokenURL(c), &r.Body, &gophercloud.RequestOpts{
+func Get(c *opentelekomcloud.ServiceClient, token string) (r GetResult) {
+	resp, err := c.Get(tokenURL(c), &r.Body, &opentelekomcloud.RequestOpts{
 		MoreHeaders: subjectTokenHeaders(c, token),
 		OkCodes:     []int{200, 203},
 	})
@@ -181,8 +181,8 @@ func Get(c *gophercloud.ServiceClient, token string) (r GetResult) {
 }
 
 // Validate determines if a specified token is valid or not.
-func Validate(c *gophercloud.ServiceClient, token string) (bool, error) {
-	resp, err := c.Request("HEAD", tokenURL(c), &gophercloud.RequestOpts{
+func Validate(c *opentelekomcloud.ServiceClient, token string) (bool, error) {
+	resp, err := c.Request("HEAD", tokenURL(c), &opentelekomcloud.RequestOpts{
 		MoreHeaders: subjectTokenHeaders(c, token),
 		OkCodes:     []int{204, 404},
 	})
@@ -194,8 +194,8 @@ func Validate(c *gophercloud.ServiceClient, token string) (bool, error) {
 }
 
 // Revoke immediately makes specified token invalid.
-func Revoke(c *gophercloud.ServiceClient, token string) (r RevokeResult) {
-	_, r.Err = c.Delete(tokenURL(c), &gophercloud.RequestOpts{
+func Revoke(c *opentelekomcloud.ServiceClient, token string) (r RevokeResult) {
+	_, r.Err = c.Delete(tokenURL(c), &opentelekomcloud.RequestOpts{
 		MoreHeaders: subjectTokenHeaders(c, token),
 	})
 	return

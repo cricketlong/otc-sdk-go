@@ -1,12 +1,12 @@
 package otc
 
 import (
-	"fmt"
 	"net/url"
 	"reflect"
+    "strings"
 
-	opentelekomcloud "github.com/cricketlong/otc-sdk-go/"
-	tokens3 "github.com/cricketlong/otc-sdk-go/otc/identity/v3/tokens"
+	opentelekomcloud "github.com/cricketlong/otc-sdk-go"
+	tokens "github.com/cricketlong/otc-sdk-go/otc/identity/tokens"
 )
 
 // NewClient prepares an unauthenticated ProviderClient instance.
@@ -68,8 +68,9 @@ func Authenticate(client *opentelekomcloud.ProviderClient, options opentelekomcl
 	//}
 
     endpoint := client.IdentityEndpoint
-    if !endpoint.HasSubffix("/")
-        endpoint := endpoint + "/"
+    if !strings.HasSuffix(endpoint, "/") {
+        endpoint = endpoint + "/"
+    }
 
 	return v3auth(client, endpoint, &options, opentelekomcloud.EndpointOpts{})
 }
@@ -128,11 +129,11 @@ func v2auth(client *gophercloud.ProviderClient, endpoint string, options gopherc
 */
 
 // AuthenticateV3 explicitly authenticates against the identity v3 service.
-func AuthenticateV3(client *opentelekomcloud.ProviderClient, options tokens3.AuthOptionsBuilder, eo opentelekomcloud.EndpointOpts) error {
+func AuthenticateV3(client *opentelekomcloud.ProviderClient, options tokens.AuthOptionsBuilder, eo opentelekomcloud.EndpointOpts) error {
 	return v3auth(client, "", options, eo)
 }
 
-func v3auth(client *opentelekomcloud.ProviderClient, endpoint string, opts tokens3.AuthOptionsBuilder, eo opentelekomcloud.EndpointOpts) error {
+func v3auth(client *opentelekomcloud.ProviderClient, endpoint string, opts tokens.AuthOptionsBuilder, eo opentelekomcloud.EndpointOpts) error {
 	// Override the generated service endpoint with the one returned by the version endpoint.
 	v3Client, err := NewIdentityV3(client, eo)
 	if err != nil {
@@ -143,7 +144,7 @@ func v3auth(client *opentelekomcloud.ProviderClient, endpoint string, opts token
 		v3Client.Endpoint = endpoint
 	}
 
-	result := tokens3.Create(v3Client, opts)
+	result := tokens.Create(v3Client, opts)
 
 	token, err := result.ExtractToken()
 	if err != nil {
@@ -221,16 +222,14 @@ func NewObjectStorageV1(client *gophercloud.ProviderClient, eo gophercloud.Endpo
 */
 
 // NewComputeV2 creates a ServiceClient that may be used with the v2 compute package.
-/*
-func NewComputeV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
+func NewComputeV2(client *opentelekomcloud.ProviderClient, eo opentelekomcloud.EndpointOpts) (*opentelekomcloud.ServiceClient, error) {
 	eo.ApplyDefaults("compute")
 	url, err := client.EndpointLocator(eo)
 	if err != nil {
 		return nil, err
 	}
-	return &gophercloud.ServiceClient{ProviderClient: client, Endpoint: url}, nil
+	return &opentelekomcloud.ServiceClient{ProviderClient: client, Endpoint: url}, nil
 }
-*/
 
 // NewNetworkV2 creates a ServiceClient that may be used with the v2 network package.
 /*
@@ -322,15 +321,13 @@ func NewDBV1(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*
 */
 
 // NewImageServiceV2 creates a ServiceClient that may be used to access the v2 image service.
-/*
-func NewImageServiceV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
+func NewImageServiceV2(client *opentelekomcloud.ProviderClient, eo opentelekomcloud.EndpointOpts) (*opentelekomcloud.ServiceClient, error) {
 	eo.ApplyDefaults("image")
 	url, err := client.EndpointLocator(eo)
 	if err != nil {
 		return nil, err
 	}
-	return &gophercloud.ServiceClient{ProviderClient: client,
+	return &opentelekomcloud.ServiceClient{ProviderClient: client,
 		Endpoint:     url,
 		ResourceBase: url + "v2/"}, nil
 }
-*/
